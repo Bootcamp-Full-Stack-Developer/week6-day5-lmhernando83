@@ -1,14 +1,15 @@
+
 let actualId;
 //TODO asignar variable al valor de localStorage.
-const localStorage;
+const localStorage = window.localStorage;
 // TODO asignar variable al valor de sessionStorage.
-const sessionStorage;
+const sessionStorage = window.localStorage.favorites;
 let favorites = [];
 const replayerList = document.getElementById('replayer-list');
 const favList = document.getElementById('favorites');
 const replayer = document.getElementById('replayer');
 const videos = [];
-const videosBBDD = ['./videos/SampleVideo_720x480_1mb.mp4', './videos/SampleVideo_720x480_2mb.mp4', './videos/SampleVideo_1280x720_1mb.mp4', './videos/SampleVideo_1280x720_2mb.mp4'];
+const videosBBDD = ['https://www.w3schools.com/html/mov_bbb.mp4', 'http://butlerccwebdev.net/support/html5-video/media/bigbuckbunnytrailer-480p.mp4'];
 
 // Event Listener que lanza la siguiente función cuando el documento a cargado
 document.addEventListener('DOMContentLoaded', function() {
@@ -16,11 +17,21 @@ document.addEventListener('DOMContentLoaded', function() {
     videosBBDD.forEach((title, id) => {
         createVideoElement(title, id);
     });
+    document.getElementById('play').addEventListener("click", function(){
+        playVideo();
+    });
+    document.getElementById('pause').addEventListener("click", function(){
+        pauseVideo();
+    });
+    document.getElementById('add').addEventListener("click", function(){
+        addToFavorites();
+    });
     // Comprobamos si existe la key favoritos en localStorage, en caso de que exista creamos los favoritos
-    if (!localStorage.favorites) {
-        localStorage.setItem('favorites', JSON.stringify([]));
+    if (!localStorage.getItem('favorites')) {
+        window.localStorage.setItem('favorites', JSON.stringify([]));
     } else {
-        createFavorites(JSON.parse(localStorage.favorites));
+        favorites = JSON.parse(localStorage.getItem('favorites'))
+        createFavorites(favorites);
     }
     // Fijamos el actualId al primer video del array (index 0), será el video reproduciendose actualmente.
     actualId = 0;
@@ -28,12 +39,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
 //TODO Función que selecciona el video con el actualId y lo reproduce
 function playVideo() {
-
+    videos[actualId].play()
 }
+
 
 //TODO  Función que selecciona el video con el actualId y lo pausa.
 function pauseVideo() {
-
+    videos[actualId].pause()
 }
 
 // Función que se encarga de crear el video y la miniatura en el DOM
@@ -62,6 +74,7 @@ function createVideoElement(title, id) {
     }, 500);
     videos.push(video);
 }
+
 
 // Función que cambia el video a reproducir, pone el actual en oculto y muestra el seleccionado y pasado por el evento
 function onClickListItem(e) {
@@ -94,5 +107,9 @@ function createFavorites(items) {
 // TODO Traer los favoritos de localStorage, almacenar el nuevo video guardado en el arr favorites y
 // TODO guardarlo en localStorate, por último llamar a createFavorites con un array que tenga el valor de la id del nuevo video (actualId)
 function addToFavorites() {
-
+    favorites.push('videos'+actualId);
+    window.localStorage.setItem('favorites', JSON.stringify(favorites));
+    createFavorites(favorites)
+    
 }
+
